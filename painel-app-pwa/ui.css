@@ -1,0 +1,408 @@
+/* ══════════════════════════════════════════════════════════════════════
+   BARBER IA — DESIGN SYSTEM DO PAINEL
+
+   Uma camada. Nao cria tela, nao muda estrutura, nao toca em logica.
+   Tudo que define a identidade mora aqui e some tirando uma linha.
+
+   POR QUE UMA CAMADA, E NAO EDICAO ESPALHADA
+   O index.html tem 108 KB de CSS em 6 blocos. Ele JA TEM um sistema de
+   tokens no :root (--r-sm, --r-lg, --sp-4, --tx-1...). O problema nunca
+   foi falta de sistema: foi que metade das telas escrevia valor na mao
+   em vez de usar o token. Entao o primeiro movimento daqui e REDEFINIR
+   os tokens que ja existem — isso conserta de uma vez toda regra que
+   ja os usava — e so depois alcancar, classe por classe, as que
+   escreveram valor fixo.
+
+   O QUE A AUDITORIA MEDIU (Chromium, 430x932, backend respondendo)
+     raio de card, por tela: 16 · 14 · 12 · 11 · 10 · 8 · 7 · 6 · 5 · 3 · 2
+     raio de botao, por tela: 12 · 11 · 9 · 8 · 7 · 5 · 4
+     altura de botao no Caixa: 20 · 32 · 36 · 39 · 47 · 50  (seis)
+     corpo de botao: 11 · 12 · 13 · 14 · 15 · 16px
+     fonte: a pagina usa a do sistema, mas hora e id caiam em monospace
+     dois sistemas de estado vazio convivendo: .es e .ES
+     esqueleto (.sk) existia no CSS e nenhuma tela usava
+
+   IDENTIDADE (nao ha outra)
+     PRETO de fundo · AZUL ELETRICO de acao · BRANCO de leitura
+     VERDE so em valor positivo e confirmacao
+     AMBAR para atencao
+     VERMELHO nunca e identidade — so para o que e de fato critico
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. OS TOKENS QUE JA EXISTIAM, REAPONTADOS ────────────────────────
+   Tres tamanhos de raio no produto inteiro: controle, card, bloco.
+   Como as regras do index.html ja chamam --r-sm e --r-lg, mudar aqui
+   alinha de graca tudo que foi escrito direito desde o comeco. */
+:root{
+  --r-xs:  11px;   --r-sm:  11px;   --r-md:  11px;
+  --r-lg:  14px;   --r-xl:  14px;   --r-2xl: 18px;
+
+  /* o azul da Home passa a ser o azul do produto inteiro.
+     Antes: --alc-ac #3D7BFF, mais apagado, so na tela de assinatura. */
+  --alc-ac:      #2A9BFF;
+  --alc-ac-2:    #5FACFF;
+  --alc-ac-bg:   rgba(42,155,255,.12);
+  --alc-ac-bd:   rgba(42,155,255,.32);
+
+  --alc-r-ctrl:   11px;
+  --alc-r-card:   14px;
+  --alc-r-bloco:  18px;
+  --alc-r-pilula: 999px;
+
+  --alc-sombra-card: 0 10px 26px -20px rgba(0,0,0,.9);
+  --alc-glow:        0 0 20px -8px rgba(42,155,255,.55);
+
+  /* altura unica de controle: alvo de toque confortavel no celular */
+  --alc-alt-ctrl: 42px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   AS DUAS IDENTIDADES — BARBER IA e BEAUTY IA
+
+   Produtos irmãos: mesma estrutura, mesma tipografia, mesmo espaçamento,
+   mesmos componentes, mesma hierarquia, mesma linguagem de IA. O que muda
+   é a cor, e só a cor.
+
+   O painel já sabia, desde antes, se a loja é barbearia ou salão: existe
+   um motor de segmento que troca as PALAVRAS ("barbearia" vira "salão",
+   "BARBER IA" vira "BEAUTY IA"). Ele nunca trocou a cor — o salão lia
+   "BEAUTY IA" escrito em azul de tecnologia. Agora o ui.js marca
+   <html data-ia="beauty"> e a paleta inteira acompanha.
+
+   Por que tanto token de opacidade em vez de rgba(var(--rgb), .3): o
+   rgba com variável dentro só funciona em iPhone mais novo. Cada nível de
+   transparência tem o seu próprio token — é mais verboso e não quebra em
+   aparelho velho, que é o que o dono de salão costuma ter.
+
+   BARBER IA  — preto profundo · azul marinho · azul elétrico · azul neon
+                branco de leitura · glow azul
+                sensação: tecnologia, performance, barbearia premium
+
+   BEAUTY IA  — preto profundo · vinho muito escuro · rosa queimado
+                champagne · dourado suave · off-white de leitura
+                glow bem discreto
+                sensação: luxo, cosmético, elegância
+                NÃO é rosa choque, não é pink neon, não é roxo
+   ══════════════════════════════════════════════════════════════════════ */
+
+:root{
+  /* ── BARBER IA (padrão) ── */
+  --ia-ac:      #2A9BFF;   /* acento forte: ícone, borda, selecionado   */
+  --ia-ac2:     #5FACFF;   /* acento claro: número, link, legenda       */
+  --ia-ac3:     #BFE2FF;   /* o mais claro: topo de gradiente           */
+  --ia-ac4:     #0A5FC8;   /* o mais fundo: fim de gradiente            */
+  --ia-sobre:   #FFFFFF;   /* texto EM CIMA do acento                   */
+  --ia-pino:    #EDF0F5;   /* o pino da chave liga/desliga              */
+
+  --ia-a06: rgba(42,155,255,.06);  --ia-a10: rgba(42,155,255,.10);
+  --ia-a14: rgba(42,155,255,.14);  --ia-a16: rgba(42,155,255,.16);
+  --ia-a20: rgba(42,155,255,.20);  --ia-a22: rgba(42,155,255,.22);
+  --ia-a30: rgba(42,155,255,.30);  --ia-a38: rgba(42,155,255,.38);
+  --ia-a40: rgba(42,155,255,.40);  --ia-a60: rgba(42,155,255,.60);
+
+  --ia-p045: rgba(10,132,255,.045); --ia-p10: rgba(10,132,255,.10);
+  --ia-p12:  rgba(10,132,255,.12);  --ia-p20: rgba(10,132,255,.20);
+  --ia-p34:  rgba(10,132,255,.34);  --ia-p42: rgba(10,132,255,.42);
+  --ia-p90:  rgba(10,132,255,.90);
+  --ia-br50: rgba(90,185,255,.5);
+
+  --ia-fundo1: #15233A;  --ia-fundo2: #0A1222;  --ia-fundo3: #05080F;
+  --ia-bloco1: #070A10;  --ia-bloco2: #05070C;
+
+  --ia-grad: linear-gradient(170deg,#3FA8FF,#1878E0);
+  --ia-grad-bd: rgba(120,200,255,.42);
+}
+
+:root[data-ia="beauty"]{
+  /* Rosa QUEIMADO, não rosa de brinquedo: puxa para o terracota, como
+     batom nude escuro. O claro é champagne, não branco rosado. */
+  --ia-ac:      #C2836E;
+  --ia-ac2:     #E0C09B;
+  --ia-ac3:     #F0DFC4;
+  --ia-ac4:     #8A4F42;
+  --ia-sobre:   #1A1012;   /* champagne é claro: o texto em cima escurece */
+  --ia-pino:    #F3EEE8;
+
+  --ia-a06: rgba(194,131,110,.06);  --ia-a10: rgba(194,131,110,.10);
+  --ia-a14: rgba(194,131,110,.14);  --ia-a16: rgba(194,131,110,.16);
+  --ia-a20: rgba(194,131,110,.20);  --ia-a22: rgba(194,131,110,.22);
+  --ia-a30: rgba(194,131,110,.30);  --ia-a38: rgba(194,131,110,.38);
+  --ia-a40: rgba(194,131,110,.40);  --ia-a60: rgba(194,131,110,.60);
+
+  /* o glow do salão é MENOS forte que o da barbearia, de propósito:
+     luxo não pisca */
+  --ia-p045: rgba(168,96,74,.04);  --ia-p10: rgba(168,96,74,.08);
+  --ia-p12:  rgba(168,96,74,.10);  --ia-p20: rgba(168,96,74,.16);
+  --ia-p34:  rgba(168,96,74,.26);  --ia-p42: rgba(168,96,74,.32);
+  --ia-p90:  rgba(168,96,74,.70);
+  --ia-br50: rgba(231,211,179,.45);
+
+  --ia-fundo1: #3A1F28;  --ia-fundo2: #26131D;  --ia-fundo3: #12090E;
+  --ia-bloco1: #140B11;  --ia-bloco2: #0A0709;
+
+  --ia-grad: linear-gradient(170deg,#E7D3B3,#B9775F);
+  --ia-grad-bd: rgba(231,211,179,.42);
+}
+
+/* As telas internas seguem a identidade pelo mesmo caminho: elas já usam
+   --alc-ac, que agora é só um apelido do acento da IA em uso. */
+:root{
+  --alc-ac:    var(--ia-ac);
+  --alc-ac-2:  var(--ia-ac2);
+  --alc-ac-bg: var(--ia-a14);
+  --alc-ac-bd: var(--ia-a30);
+  --alc-glow:  0 0 20px -8px var(--ia-a60);
+}
+
+/* ── A TROCA ──────────────────────────────────────────────────────────
+   O segmento chega do servidor depois da tela já estar pintada. Sem isto
+   o painel piscava de azul para champagne num quadro só — parecia erro,
+   não identidade. Com a transição, a cor ASSENTA. Quem pediu menos
+   movimento não vê transição nenhuma (regra 12 lá embaixo). */
+html[data-ia] body *,
+html[data-ia] body *::before,
+html[data-ia] body *::after{
+  transition: background-color .5s ease, border-color .5s ease,
+              color .5s ease, box-shadow .5s ease, fill .5s ease, stroke .5s ease;
+}
+
+/* ── 1. CARDS ─────────────────────────────────────────────────────────
+   Um raio, uma borda, uma sombra, um fundo. Vale para o card de KPI da
+   Agenda, o da equipe, o do CRM, a linha de servico e o grafico do
+   Financeiro — eram seis aparencias para a mesma ideia. */
+.card-pm, .HC, .HMETA, .HSTRIP, .HCCO, .HACHC, .HCONSI,
+.EQ-CARD, .EQ-K, .EQ-CW, .CRM-CARD, .CRM-KPIS .CRM-K,
+.SV-ROW, .SV-K, .FG, .FK, .FHERO, .FCARD, .sk-card,
+.adn, .avt, .agr, .al .ac, .CX-LIST, .CX-PANEL, .card, .cx-card,
+#ag-strip > div > div{
+  border-radius: var(--alc-r-card) !important;
+  border:1px solid var(--bd-default) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.042), rgba(255,255,255,.014)) !important;
+  box-shadow: var(--alc-sombra-card) !important;
+}
+/* o Financeiro pode continuar com destaque — mas dentro das regras */
+.FHERO{
+  background: linear-gradient(150deg, var(--ia-a10), rgba(255,255,255,.02) 60%) !important;
+  border-color: var(--alc-ac-bd) !important;
+  box-shadow: var(--alc-sombra-card), var(--alc-glow) !important;
+}
+.md{ border-radius: var(--alc-r-bloco) !important; }
+
+/* ── 2. BOTOES ────────────────────────────────────────────────────────
+   2.1  a acao principal e AZUL. Era creme (#EDEAE6) com texto preto em
+        telas inteiras; a Home ensina azul e a tela interna desensinava. */
+/* "Fechar comanda" era um retangulo BRANCO no meio da tela escura — a
+   acao mais importante do Caixa parecendo de outro produto. */
+.btn.btn-primary, button.btn-primary, .btn.bp, .HACBTN.prim, .CX-FECHAR-BTN{
+  background: var(--ia-grad) !important;
+  color: var(--ia-sobre) !important;
+  border:1px solid var(--ia-grad-bd) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2),
+              0 8px 18px -12px var(--ia-p90) !important;
+  font-weight:650 !important;
+}
+.CX-FECHAR-BTN{ border-radius: var(--alc-r-ctrl) !important;
+  min-height: var(--alc-alt-ctrl) !important; font-size:14px !important; }
+/* 2.2  todo botao: mesmo raio, mesma altura minima, mesmo corpo.
+       Seis alturas numa unica tela nao e estilo, e descuido. */
+.btn, .btn-primary, .btn-ghost, .btn-sm, .bsm, .bp, .bg,
+.adb, .avb, .FPB, .FNB, .HACBTN, .h-sync, .nb, .FOPI, .FRKI{
+  border-radius: var(--alc-r-ctrl) !important;
+  font-family: inherit !important;
+  transition: transform .12s cubic-bezier(.3,.8,.4,1), background .15s, border-color .15s;
+}
+#ct .btn, #ct .bsm, #ct .adb, #ct .avb, #ct .FPB, #ct .HACBTN, #ct .h-sync{
+  min-height: var(--alc-alt-ctrl) !important;
+  font-size: 14px !important;
+  padding-left: 16px !important; padding-right: 16px !important;
+  display:inline-flex !important; align-items:center !important;
+  justify-content:center !important; gap:7px;
+}
+/* o botao pequeno de dentro de card continua pequeno — mas um so pequeno */
+#ct .btn.btn-sm, #ct .btn.bsm{ min-height:34px !important; font-size:13px !important;
+  padding-left:12px !important; padding-right:12px !important; }
+.btn:not(.btn-primary):not(.bp), .btn-ghost{
+  border:1px solid var(--bd-default) !important;
+  background: rgba(255,255,255,.035) !important;
+  color: var(--tx-1) !important;
+}
+.btn:active, .bp:active, .adb:active, .avb:active,
+.FPB:active, .FNB:active, .HACBTN:active{ transform:scale(.96); }
+
+/* 2.3  segmentado (Lista/Grade, Hoje/Mes/30 dias): o escolhido fica
+        azul, nao branco puro — branco puro competia com o conteudo */
+.avb.on, .FPB.on, .adb.on, .nb.on, .CRM-SEG.on, .CX-PAG-BTN.sel{
+  background: var(--alc-ac-bg) !important;
+  border:1px solid var(--alc-ac-bd) !important;
+  color: var(--alc-ac-2) !important;
+  font-weight:650 !important;
+}
+
+/* ── 2.4  O CAIXA ─────────────────────────────────────────────────────
+   Era a tela mais fora do padrao: seis alturas de botao (20, 32, 36, 39,
+   47 e 50px) e cinco raios (4, 8, 9, 10, 12px) numa tela so. */
+.CX-CARD, .CX-ITEM, .CX-BOX{ border-radius: var(--alc-r-card) !important; }
+.CX-PAG-BTN, .CX-ADD-BTN, .CX-DEL-BTN, .CX-BTN{
+  border-radius: var(--alc-r-ctrl) !important;
+  min-height: var(--alc-alt-ctrl) !important;
+  font-size:14px !important;
+}
+.CX-PAG-BTN.sel, .CX-CARD.active{
+  border-color: var(--alc-ac-bd) !important;
+  background: var(--alc-ac-bg) !important;
+}
+.CX-CMD-ID, .CX-ITEM-DEL, .CRM-SI{ border-radius: var(--alc-r-pilula) !important; }
+.CRM-SI{ border-radius: var(--alc-r-card) !important; }
+
+/* ── 2.5  BARRAS DE PROGRESSO ─────────────────────────────────────────
+   Tinham raio 1, 2, 3 e 5px conforme a tela. Barra fina e pilula: o
+   raio acompanha a altura, nao um numero escolhido na hora. */
+.SV-BARBG, .SV-BARF, .EQ-BARBG, .EQ-BARF, .EQ-PRBG, .EQ-PRFILL,
+.EQ-RPB, .EQ-RPBF, .FHPBG, .FHPFILL, .HMBPBG, .HMBPF,
+.HBIQ-IBAR, .HBIQ-IBARF, .nb-bar, .barra, .bar, .prog, .progbg{
+  border-radius: var(--alc-r-pilula) !important;
+}
+.SV-BARF, .EQ-BARF, .EQ-PRFILL, .FHPFILL, .HMBPF, .HBIQ-IBARF{
+  background: linear-gradient(90deg, var(--ia-ac), var(--ia-ac2)) !important;
+}
+
+/* ── 2.6  OS ULTIMOS FORA DA REGUA ───────────────────────────────────
+   Medidos um a um depois da primeira passada: o ✕ de apagar item tinha
+   20px de altura (alvo de toque menor que a ponta do dedo), as abas do
+   CRM 32px/12px contra 34px/13px do resto, e o seletor de pagamento
+   54px. */
+.CX-ITEM-DEL{ min-height:32px !important; min-width:32px !important;
+  font-size:14px !important; border-radius: var(--alc-r-pilula) !important; }
+.CX-PAG-BTN{ min-height:48px !important; }
+.CRM-SEG{ min-height:34px !important; font-size:13px !important;
+  border-radius: var(--alc-r-ctrl) !important; padding:0 12px !important;
+  display:inline-flex !important; align-items:center !important; }
+.FNH, .FNB{ font-family: inherit !important;   /* a .FNH caia em Arial */
+  min-height:34px !important; font-size:13px !important;
+  border-radius: var(--alc-r-ctrl) !important; padding:0 12px !important;
+  display:inline-flex !important; align-items:center !important; }
+
+/* ── 3. PILULAS E ETIQUETAS ──────────────────────────────────────── */
+.bx, .hdr-pill, .sk-badge, .ax-badge, .tag, .pill{
+  border-radius: var(--alc-r-pilula) !important;
+  font-size:11px !important; letter-spacing:.02em;
+}
+
+/* ── 4. CAMPOS ────────────────────────────────────────────────────── */
+#ct input:not([type=checkbox]):not([type=radio]),
+#ct select, #ct textarea, .fi, .fs, .search-bar{
+  border-radius: var(--alc-r-ctrl) !important;
+  background: var(--bg-input) !important;
+  border:1px solid var(--bd-default) !important;
+  color: var(--tx-1) !important;
+  font-family: inherit !important;
+  font-size:15px !important;          /* 16px- evita o zoom automatico do iOS */
+}
+#ct input:not([type=checkbox]):not([type=radio]), #ct select{
+  min-height: var(--alc-alt-ctrl) !important;
+}
+#ct input:focus, #ct select:focus, #ct textarea:focus{
+  outline:2px solid var(--alc-ac) !important; outline-offset:1px;
+  border-color: var(--alc-ac-bd) !important;
+}
+.fl{ font-size:11px !important; letter-spacing:.07em !important;
+     text-transform:uppercase !important; color:var(--tx-3) !important; }
+
+/* ── 5. NUMEROS ───────────────────────────────────────────────────────
+   Hora, id e valor caiam no monospace padrao do navegador — outra
+   familia, outro peso, outro produto. Ficam na fonte do sistema com
+   algarismo de largura fixa, que e o que faz coluna de numero alinhar. */
+.bi, .ah, .aghr, .cc-id,
+.FHNUM, .FCTR, .EQ-KN, .CRM-KN, .SV-KN, .alcDia b{
+  font-family: inherit !important;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings:'tnum' 1 !important;
+}
+
+/* ── 6. ESTADO VAZIO ──────────────────────────────────────────────────
+   Havia dois sistemas: .es (minusculo, do modulo de Horarios/Pacotes/
+   Fila) e .ES (maiusculo, premium, do resto). Os dois passam a ter a
+   mesma cara — a .ES, que e a boa. */
+#ct .es, #ct .ES, .vazio, .empty, .sem-dados, .EQ-EMPTY, .CX-EMPTY{
+  display:flex !important; flex-direction:column !important;
+  align-items:center !important; text-align:center !important;
+  padding:38px 20px !important;
+  border-radius: var(--alc-r-card) !important;
+  border:1px dashed var(--bd-default) !important;
+  background: rgba(255,255,255,.015) !important;
+}
+#ct .ei, #ct .ES-ICO{ font-size:26px !important; margin-bottom:12px !important;
+  opacity:.5 !important; display:block !important; }
+#ct .es-title, #ct .ES-T{ font-size:14px !important; font-weight:650 !important;
+  color:var(--tx-2) !important; letter-spacing:-.01em !important; margin-bottom:6px !important; }
+#ct .es-sub, #ct .ES-S{ font-size:12.5px !important; color:var(--tx-3) !important;
+  line-height:1.6 !important; max-width:300px !important; margin:0 auto !important; }
+
+/* ── 7. ESQUELETO ─────────────────────────────────────────────────────
+   O .sk ja existia e nenhuma tela usava: elas trocavam a pagina inteira
+   por um disco girando, e quem olhava nao fazia ideia do que viria.
+   O ui.js troca o disco por este desenho, com a forma do conteudo. */
+.alcSk{ padding:4px 0 }
+.alcSkTopo{ margin-bottom:16px }
+.alcSkNum{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px }
+.alcSkK{ border:1px solid var(--bd-subtle); border-radius:var(--alc-r-card);
+         background:rgba(255,255,255,.02); padding:14px 12px; }
+.alcSkK .sk-line{ margin-bottom:10px }
+.alcSkK .sk-num{ width:70% !important; height:22px !important; margin:0 }
+.alcSkLista{ display:flex; flex-direction:column; gap:8px }
+.alcSkIt{ display:flex; align-items:center; gap:12px;
+          border:1px solid var(--bd-subtle); border-radius:var(--alc-r-card);
+          background:rgba(255,255,255,.02); padding:14px; }
+.alcSkTx{ flex:1; min-width:0 }
+.alcSkTx .sk-line:last-child{ margin-bottom:0 }
+@media (max-width:420px){ .alcSkNum{ grid-template-columns:repeat(3,1fr); gap:7px }
+  .alcSkK{ padding:11px 9px } }
+
+/* ── 8. AVISOS ────────────────────────────────────────────────────── */
+.ok, .sucesso, .toast.ok{ color:var(--c-green) !important;
+  background:var(--c-green-bg) !important; border:1px solid var(--c-green-bd) !important;
+  border-radius:var(--alc-r-ctrl) !important; }
+.aviso, .atencao{ color:var(--c-yellow) !important;
+  background:var(--c-yellow-bg) !important; border:1px solid var(--c-yellow-bd) !important;
+  border-radius:var(--alc-r-ctrl) !important; }
+.tos{ border-radius: var(--alc-r-ctrl) !important; }
+
+/* ── 9. HIERARQUIA DENTRO DA TELA ─────────────────────────────────────
+   O nome da secao vive no cabecalho, ao lado do Voltar. O titulo que a
+   tela repetia logo abaixo vira sobrancelha: dizer a mesma coisa duas
+   vezes, em dois tamanhos, e o contrario de hierarquia. */
+#ct .mh{ margin-bottom:16px !important; align-items:flex-start !important; }
+#ct .mt{ font-size:13px !important; letter-spacing:.14em !important;
+         text-transform:uppercase !important; color:var(--tx-3) !important;
+         font-weight:700 !important; }
+#ct .FTIT{ font-size:13px !important; letter-spacing:.14em !important;
+           text-transform:uppercase !important; color:var(--tx-3) !important; }
+#ct .FSECT{ font-size:11px !important; letter-spacing:.12em !important;
+            text-transform:uppercase !important; color:var(--tx-3) !important;
+            margin:20px 0 10px !important; }
+
+/* ── 10. RESPIRO E CELULAR ────────────────────────────────────────────
+   Mesma margem lateral da Home em toda tela interna, e nada encostando
+   na borda do aparelho. */
+@media (max-width:860px){
+  #ct{ padding-left:16px !important; padding-right:16px !important; }
+  #ct .mh{ flex-direction:column; gap:10px; }
+  #ct .mh > div:last-child{ width:100%; }
+  #ct .mh > div:last-child .btn{ flex:1; }
+  /* tabela larga rola dentro do proprio bloco, nunca empurra a pagina */
+  #ct table{ width:100% !important; }
+  #ct .tbl, #ct .tabela, #ct .FTBL{ overflow-x:auto !important; -webkit-overflow-scrolling:touch; }
+}
+html, body{ overflow-x:hidden; }
+
+/* ── 11. BARRA DE ROLAGEM ─────────────────────────────────────────── */
+::-webkit-scrollbar{ width:6px; height:6px; }
+::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.14); border-radius:999px; }
+::-webkit-scrollbar-track{ background:transparent; }
+
+/* ── 12. MENOS MOVIMENTO, PARA QUEM PEDE ──────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  .sk{ animation:none !important; }
+  *{ transition-duration:.01ms !important; }
+}
